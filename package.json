@@ -1,0 +1,82 @@
+{
+    "name": "scvsc",
+    "displayName": "scvsc",
+    "description": "vscode as a supercollider client",
+    "version": "0.0.1",
+    "publisher": "alexander-daniel",
+    "homepage": "",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.32.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/alexander-daniel/scvsc"
+    },
+    "activationEvents": [
+        "onLanguage:supercollider"
+    ],
+    "main": "./extension",
+    "icon": "icon.png",
+    "contributes": {
+        "configuration": [
+            {
+                "type": "object",
+                "title": "SuperCollider Configuration",
+                "properties": {
+                    "supercollider.sclangCmd": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "default": null,
+                        "description": "Specifies the correct sclang command for your SuperCollider installation."
+                    }
+                }
+            }
+        ],
+        "keybindings": [],
+        "commands": [
+            {
+                "command": "supercollider.bootServer",
+                "title": "Boot a SC Server",
+                "category": "SuperCollider"
+            },
+            {
+                "command": "supercollider.sendCode",
+                "title": "send code test",
+                "category": "SuperCollider"
+            }
+        ],
+        "languages": [
+            {
+                "id": "supercollider",
+                "aliases": [
+                    "SuperCollider",
+                    "supercollider"
+                ],
+                "extensions": [
+                    ".sc",
+                    ".scd",
+                    ".schelp"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "supercollider",
+                "scopeName": "source.supercollider",
+                "path": "./syntaxes/supercollider.tmLanguage.json"
+            }
+        ]
+    },
+    "devDependencies": {
+        "@types/node": "^7.0.43",
+        "eslint": "^4.11.0",
+        "vscode": "^1.1.6"
+    },
+    "dependencies": {
+        "supercolliderjs": "^1.0.1"
+    }
+}
