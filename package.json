@@ -38,13 +38,18 @@
         "keybindings": [],
         "commands": [
             {
-                "command": "supercollider.bootServer",
-                "title": "Boot a SC Server",
+                "command": "supercollider.startSCLang",
+                "title": "Start sclang",
                 "category": "SuperCollider"
             },
             {
-                "command": "supercollider.sendCode",
-                "title": "send code test",
+                "command": "supercollider.bootServer",
+                "title": "Boot a SuperCollider Server (scsynth)",
+                "category": "SuperCollider"
+            },
+            {
+                "command": "supercollider.evaluateHighlighted",
+                "title": "Evaluate Highlighted",
                 "category": "SuperCollider"
             }
         ],

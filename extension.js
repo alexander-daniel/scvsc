@@ -1,29 +1,55 @@
 const vscode = require('vscode');
-const sc = require("supercolliderjs");
+const Lang = require("supercolliderjs").lang.default;
 
 async function activate(context) {
 
-    let _lang;
+    let lang = null;
 
-    try {
-        // Probably not the best place to do this, but right now it's efficient
-        _lang = await sc.lang.boot();
-        _lang.on('stdout', (message) => console.log(message))
-        _lang.on('stderr', (message) => console.error(message))
-        console.log('sclang ready')
-    }
-    catch (err) {
-        console.log(err);
-    }
+    const log = vscode.window.createOutputChannel('vscsc');
+    const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
+    statusBar.text = 'sclang 🔴';
+    statusBar.show();
+
+    let startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
+        try {
+
+            lang = new Lang();
+            lang.on('stdout', (message) => console.log(message))
+            lang.on('stderr', (message) => console.error(message))
+            await lang.boot();
+
+            console.log('sclang ready');
+            log.appendLine('sclang readyyyy');
+            statusBar.text = 'sclang 🟢';
+            statusBar.show();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+    context.subscriptions.push(startSCLang);
 
     let bootSCServer = vscode.commands.registerCommand('supercollider.bootServer', async () => {
-        const result = await _lang.interpret('s.boot', null, true, false);
-        console.log(result);
+        if (!lang) {
+            console.error('sclang not started, cannot boot scsynth.');
+        }
+        try {
+            const result = await lang.interpret('s.boot', null, true, false);
+            console.log(result);
+        } catch (err) {
+            console.error(err);
+        }
     });
 
     context.subscriptions.push(bootSCServer);
 
-    let sendCode = vscode.commands.registerCommand('supercollider.sendCode', async () => {
+    let evaluateHighlighted = vscode.commands.registerCommand('supercollider.evaluateHighlighted', async () => {
+
+        if (!lang) {
+            console.error('sclang not started, cannot boot scsynth.');
+        }
+
         const editor = vscode.window.activeTextEditor;
         const selection = editor.selection;
         if (selection && !selection.isEmpty) {
@@ -36,7 +62,7 @@ async function activate(context) {
             const highlighted = editor.document.getText(selectionRange);
 
             try {
-                const result = await _lang.interpret(highlighted, null, true, false);
+                const result = await lang.interpret(highlighted, null, true, false);
                 console.log(result);
             }
             catch (err) {
@@ -46,15 +72,16 @@ async function activate(context) {
         }
     });
 
-    context.subscriptions.push(sendCode);
+    context.subscriptions.push(evaluateHighlighted);
 
 }
 
 exports.activate = activate;
 
 function deactivate() {
-    if (_lang) {
-        _lang.quit();
+    if (lang) {
+        lang.quit();
+        lang = null;
     }
 
 }
