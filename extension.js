@@ -32,7 +32,8 @@ async function activate(context) {
 
     let bootSCServer = vscode.commands.registerCommand('supercollider.bootServer', async () => {
         if (!lang) {
-            console.error('sclang not started, cannot boot scsynth.');
+            console.error('sclang not started, cannot boot scsynth using s.boot.');
+            return;
         }
         try {
             const result = await lang.interpret('s.boot', null, true, false);
@@ -43,6 +44,22 @@ async function activate(context) {
     });
 
     context.subscriptions.push(bootSCServer);
+
+    let hushAll = vscode.commands.registerCommand('supercollider.hush', async () => {
+        if (!lang) {
+            console.error('sclang not started, cannot hush.');
+            return;
+        }
+        try {
+            const result = await lang.interpret('CmdPeriod.run', null, true, false);
+            console.log(result);
+        } catch (err) {
+            console.error(err);
+        }
+
+    });
+
+    context.subscriptions.push(hushAll);
 
     let evaluateHighlighted = vscode.commands.registerCommand('supercollider.evaluateHighlighted', async () => {
 

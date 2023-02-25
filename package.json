@@ -48,6 +48,11 @@
                 "category": "SuperCollider"
             },
             {
+                "command": "supercollider.hush",
+                "title": "Hush",
+                "category": "SuperCollider"
+            },
+            {
                 "command": "supercollider.evaluateHighlighted",
                 "title": "Evaluate Highlighted",
                 "category": "SuperCollider"
