@@ -7,6 +7,7 @@ async function activate(context) {
 
     const log = vscode.window.createOutputChannel('vscsc');
     const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
+
     statusBar.text = 'sclang 🔴';
     statusBar.show();
 
@@ -14,16 +15,17 @@ async function activate(context) {
         try {
 
             lang = new Lang();
-            lang.on('stdout', (message) => console.log(message))
-            lang.on('stderr', (message) => console.error(message))
+            lang.on('stdout', (message) => log.appendLine(message.trim()))
+            lang.on('stderr', (message) => log.appendLine(message.trim()))
             await lang.boot();
 
-            console.log('sclang ready');
-            log.appendLine('sclang readyyyy');
+            log.appendLine('sclang ready');
+
             statusBar.text = 'sclang 🟢';
             statusBar.show();
         }
         catch (err) {
+            log.appendLine(err);
             console.log(err);
         }
     });
@@ -32,13 +34,15 @@ async function activate(context) {
 
     let bootSCServer = vscode.commands.registerCommand('supercollider.bootServer', async () => {
         if (!lang) {
-            console.error('sclang not started, cannot boot scsynth using s.boot.');
+            log.appendLine('sclang not started, cannot boot scsynth using s.boot.');
             return;
         }
         try {
             const result = await lang.interpret('s.boot', null, true, false);
             console.log(result);
+            log.appendLine(result.trim());
         } catch (err) {
+            log.appendLine(err);
             console.error(err);
         }
     });
@@ -47,13 +51,14 @@ async function activate(context) {
 
     let hushAll = vscode.commands.registerCommand('supercollider.hush', async () => {
         if (!lang) {
-            console.error('sclang not started, cannot hush.');
+            log.appendLine('sclang not started, cannot hush.');
             return;
         }
         try {
             const result = await lang.interpret('CmdPeriod.run', null, true, false);
-            console.log(result);
+            log.appendLine(result.trim());
         } catch (err) {
+            log.appendLine(err);
             console.error(err);
         }
 
@@ -80,11 +85,11 @@ async function activate(context) {
 
             try {
                 const result = await lang.interpret(highlighted, null, true, false);
-                console.log(result);
+                log.appendLine(result.trim());
             }
             catch (err) {
-                debugger;
-                console.log(err);
+                log.appendLine(err);
+                console.error(err);
             }
         }
     });
