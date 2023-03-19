@@ -1,55 +1,38 @@
-# SuperCollider Extension for VS Code
+# scvsc
 
-[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://raw.githubusercontent.com/jatinchowdhury18/vscode-supercollider/master/LICENSE.md)
-
-vscode-supercollider is a [SuperCollider](https://supercollider.github.io/)
-extension for your
+`scvsc` is a [SuperCollider](https://supercollider.github.io/)
+extension for
 [Visual Studio Code](https://code.visualstudio.com/).
-The extension currently supports text highlighting and
-running in the VS Code terminal. For this extension to work
-properly, you must have SuperCollider already installed.
 
-Disclaimer: This extension has only been tested on Windows.
 
 ## Features
+- Starting `sclang` and `scsynth` from vscode
+- Evaluating selected text
+- Evaluating regions between parentheses `( )`
+- Hushing the server
 
-- Basic Syntax highlighting
-- Running SuperCollider from the VS Code terminal
+I've only tested this on MacOS.
 
 ## Instructions
 
-1. Install the vscode-supercollider extension in VS Code.
+1. Install the scvsc extension
 2. Install SuperCollider from the
    [SuperCollider website](https://supercollider.github.io/).
 
-3. In VS Code use the command `Preferences: Open Settings (JSON)`.
-   Enter the setting `"supercollider.sclangCmd": "[Command to run sclang]"`.
-   This will depend on your operating system, and on the default shell
-   you use within vscode. Examples:
 
-- (Windows, default shell: powershell) `"supercollider.sclangCmd": "& \"C:\\Program Files\\SuperCollider-3.9.3\\sclang.exe\""`
-- (OSX, default shell: bash) `"supercollider.sclangCmd": "/Applications/SuperCollider/SuperCollider.app/Contents/MacOS/sclang"`
+Gotta finish these while also detailing how to find your sclang and how to set it dynamically since right now i had to go into node_modules and hard-code it and that's not what i want to do.
 
-4. Open a SuperCollider file (`.scd`). To run use
-   `Ctrl + Shift + b`. Once your SuperCollider script
-   is running you can kill it with `Ctrl + .`
 
-5. N.B: Since SuperCollider will run code sequentially
-   without waiting for the previous command to finish
-   executing. Make sure any code requring the server is wrapped
-   as follows:
+## Reasonable Future Improvements
+- Highlight the lines that are being sent to be interpreted for like 2 seconds.
+- auto-open up output log of extension (postWindow) when starting sclang.
+- open up docs in browser
 
-```C
-s.waitForBoot{
-  //Code here
-}
-```
-
-## Future Improvements
-
-- Improved text highlighting
+## Hoop Dreams
 - Auto-complete
-- Evaluating individual lines/blocks of code
+- use a language server or something
+- open up docs directly in vscode? some kinda html renderer or something?
+
 
 ## License
 
