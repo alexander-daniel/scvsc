@@ -96,6 +96,76 @@ async function activate(context) {
 
     context.subscriptions.push(evaluateHighlighted);
 
+    let evalRegion = vscode.commands.registerCommand('supercollider.evalRegion', async () => {
+
+        if (!lang) {
+            console.error('cannot eval, no sclang');
+        }
+
+        const editor = vscode.window.activeTextEditor;
+        const selection = editor.selection;
+
+        const ranges = []
+        let brackets = 0;
+
+        // Get the total line count of the open script
+        const lineCount = vscode.window.activeTextEditor.document.lineCount;
+
+        // For every line, get the text of that line as a string.
+        for (let i = 0; i < lineCount; i++) {
+            const { text } = vscode.window.activeTextEditor.document.lineAt(i);
+
+            // for every character on the line, check to see if it's a paren
+            for (let j = 0; j < text.length; j++) {
+                const char = text.charAt(j);
+                if (char === '(' && brackets++ === 0) {
+                    ranges.push([i])
+                } else if (char === ')' && --brackets === 0) {
+                    ranges[ranges.length - 1].push(i)
+                }
+            }
+        }
+
+        // Get where the current cursor is
+        const position = vscode.window.activeTextEditor.selection.active;
+
+        // not totally sure about this --
+        // it has been hastily ported it from hadron editor so I still gotta learn how it works.
+        const range = ranges.find((range) => {
+            return range[0] <= position.c && position.c <= range[1]
+        });
+
+        // could probably use this too
+        // const selectionRange = new vscode.Range(
+        //     selection.start.line,
+        //     selection.start.character,
+        //     selection.end.line,
+        //     selection.end.character
+        // );
+        // const highlighted = editor.document.getText(selectionRange);
+
+
+        let start = range[0];
+        let end = range[1];
+        let buf = '';
+
+        for (let i = start; i <= end; i++) {
+            const { text } = vscode.window.activeTextEditor.document.lineAt(i);
+            buf += text;
+        }
+
+        try {
+            const result = await lang.interpret(buf, null, true, false);
+            log.appendLine(result.trim());
+        }
+        catch (err) {
+            log.appendLine(err);
+            console.error(err);
+        }
+
+    });
+
+    context.subscriptions.push(evalRegion);
 }
 
 exports.activate = activate;
