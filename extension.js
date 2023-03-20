@@ -5,6 +5,9 @@ async function activate(context) {
 
     let lang = null;
 
+    const configuration = vscode.workspace.getConfiguration();
+    const scLangPath = configuration.get('supercollider.sclang.cmd');
+
     const log = vscode.window.createOutputChannel('vscsc');
     const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
 
@@ -13,8 +16,7 @@ async function activate(context) {
 
     let startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
         try {
-
-            lang = new Lang();
+            lang = new Lang({ sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang" });
             lang.on('stdout', (message) => log.appendLine(message.trim()))
             lang.on('stderr', (message) => log.appendLine(message.trim()))
             await lang.boot();
@@ -99,7 +101,7 @@ async function activate(context) {
     let evalRegion = vscode.commands.registerCommand('supercollider.evalRegion', async () => {
 
         if (!lang) {
-            console.error('cannot eval, no sclang');
+            log.appendLine('sclang not started, cannot evaluate region.');
         }
 
         const editor = vscode.window.activeTextEditor;
