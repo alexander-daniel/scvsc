@@ -24,7 +24,7 @@
                 "type": "object",
                 "title": "SuperCollider Configuration",
                 "properties": {
-                    "supercollider.sclangCmd": {
+                    "supercollider.sclang.cmd": {
                         "type": [
                             "string",
                             "null"
