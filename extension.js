@@ -109,12 +109,6 @@ async function activate(context) {
         }
 
         const editor = vscode.window.activeTextEditor;
-        // const selection = editor.selection;
-
-        // const t1 = si.getScopeAt(editor.document, new vscode.Position(1, 1));
-        // debugger;
-        // console.log(t1);
-
         const ranges = []
         let brackets = 0;
 
@@ -128,17 +122,23 @@ async function activate(context) {
             // for every character on the line, check to see if it's a paren
             for (let j = 0; j < text.length; j++) {
                 const char = text.charAt(j);
-                const { scopes } = hyperScopes.getScopeAt(editor.document, new vscode.Position(i, j));
 
+                // not totally sure about this --
+                // it has been hastily ported it from hadron editor so I still gotta learn how it works.
+                const { scopes } = hyperScopes.getScopeAt(editor.document, new vscode.Position(i, j));
+                const scopesLength = scopes.length - 1;
+                const lastScope = scopes[scopesLength];
                 if (
-                    scopes[scopes.length - 1] === 'comment.single.supercollider' ||
-                    scopes[scopes.length - 1] === 'comment.multiline.supercollider' ||
-                    scopes[scopes.length - 1] === 'string.quoted.double.supercollider' ||
-                    scopes[scopes.length - 1] === 'entity.name.symbol.supercollider' ||
-                    scopes[scopes.length - 1] === 'constant.character.escape.supercollider'
+                    lastScope === 'comment.single.supercollider' ||
+                    lastScope === 'comment.multiline.supercollider' ||
+                    lastScope === 'string.quoted.double.supercollider' ||
+                    lastScope === 'entity.name.symbol.supercollider' ||
+                    lastScope === 'constant.character.escape.supercollider'
                 ) {
                     continue;
                 }
+
+                // gather the bracket ranges
                 if (char === '(' && brackets++ === 0) {
                     ranges.push([i])
                 } else if (char === ')' && --brackets === 0) {
