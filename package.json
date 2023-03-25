@@ -93,5 +93,8 @@
     "dependencies": {
         "supercolliderjs": "^1.0.1",
         "vscode": "^1.1.6"
-    }
+    },
+    "extensionDependencies": [
+        "draivin.hscopes"
+    ]
 }

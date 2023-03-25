@@ -1,19 +1,20 @@
 const vscode = require('vscode');
 const Lang = require("supercolliderjs").lang.default;
+// const { flashHighlight } = require('./util');
+
+let lang = null;
 
 async function activate(context) {
-
-    let lang = null;
 
     const configuration = vscode.workspace.getConfiguration();
     const scLangPath = configuration.get('supercollider.sclang.cmd');
 
+    const hyperScopesExt = vscode.extensions.getExtension('draivin.hscopes');
+    const hyperScopes = await hyperScopesExt.activate();
+
     const log = vscode.window.createOutputChannel('vscsc');
     log.show();
     const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
-
-    const hyperScopesExt = vscode.extensions.getExtension('draivin.hscopes');
-    const hyperScopes = await hyperScopesExt.activate();
 
     statusBar.text = 'sclang 🔴';
     statusBar.show();
@@ -21,8 +22,8 @@ async function activate(context) {
     let startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
         try {
             lang = new Lang({ sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang" });
-            lang.on('stdout', (message) => log.append(message.trim()))
-            lang.on('stderr', (message) => log.append(message.trim()))
+            lang.on('stdout', (message) => log.append(message.trim()));
+            lang.on('stderr', (message) => log.append(message.trim()));
             await lang.boot();
 
             log.appendLine('sclang ready');
@@ -92,6 +93,7 @@ async function activate(context) {
             try {
                 const result = await lang.interpret(highlighted, null, true, false);
                 log.appendLine(result.trim());
+                // flashHighlight(vscode.window.activeTextEditor, selectionRange);
             }
             catch (err) {
                 log.appendLine(err);
@@ -157,33 +159,25 @@ async function activate(context) {
         });
 
         // could  (should) probably use this instead of the code block below it
-        // const selectionRange = new vscode.Range(
-        //     selection.start.line,
-        //     selection.start.character,
-        //     selection.end.line,
-        //     selection.end.character
-        // );
-        // const highlighted = editor.document.getText(selectionRange);
-
-        let start = range[0];
-        let end = range[1];
-        let buf = '';
-
-        for (let i = start; i <= end; i++) {
-            const { text } = vscode.window.activeTextEditor.document.lineAt(i);
-            buf += text + '\n'; // have to append new line so that when interpreting it can see it as a new line. or else things break :( 
-        }
+        const selectionRange = new vscode.Range(
+            range[0],
+            0,
+            range[1],
+            Infinity // probably want to calculate this value later from the last line length
+        );
+        const highlighted = editor.document.getText(selectionRange);
 
         try {
-            const result = await lang.interpret(buf, null, true, false);
+            const result = await lang.interpret(highlighted, null, true, false);
             console.log(result);
             log.appendLine(result.trim());
+
+            // flashHighlight(vscode.window.activeTextEditor, selectionRange);
         }
         catch (err) {
             log.appendLine(err);
             console.error(err);
         }
-
     });
 
     context.subscriptions.push(evalRegion);
@@ -196,6 +190,5 @@ function deactivate() {
         lang.quit();
         lang = null;
     }
-
 }
 exports.deactivate = deactivate;
