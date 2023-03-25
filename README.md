@@ -15,11 +15,11 @@ I've only tested this on MacOS.
 
 ## Instructions
 
-1. Install the scvsc extension
-2. Install SuperCollider from the
-   [SuperCollider website](https://supercollider.github.io/).
+1. Install the scvsc extension (only development versions right now)
+2. Install [SuperCollider](https://supercollider.github.io/).
 
 
+## Configure
 Gotta finish these while also detailing how to find your sclang and how to set it dynamically since right now i had to go into node_modules and hard-code it and that's not what i want to do.
 
 
@@ -29,8 +29,8 @@ Gotta finish these while also detailing how to find your sclang and how to set i
 - open up docs in browser
 
 ## Hoop Dreams
-- Auto-complete
-- use a language server or something
+- Auto-complete or suggestions
+- use a language server or something or learn about language server in vscode
 - open up docs directly in vscode? some kinda html renderer or something?
 
 

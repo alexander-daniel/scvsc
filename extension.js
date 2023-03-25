@@ -9,7 +9,11 @@ async function activate(context) {
     const scLangPath = configuration.get('supercollider.sclang.cmd');
 
     const log = vscode.window.createOutputChannel('vscsc');
+    log.show();
     const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
+
+    const hyperScopesExt = vscode.extensions.getExtension('draivin.hscopes');
+    const hyperScopes = await hyperScopesExt.activate();
 
     statusBar.text = 'sclang 🔴';
     statusBar.show();
@@ -17,8 +21,8 @@ async function activate(context) {
     let startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
         try {
             lang = new Lang({ sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang" });
-            lang.on('stdout', (message) => log.appendLine(message.trim()))
-            lang.on('stderr', (message) => log.appendLine(message.trim()))
+            lang.on('stdout', (message) => log.append(message.trim()))
+            lang.on('stderr', (message) => log.append(message.trim()))
             await lang.boot();
 
             log.appendLine('sclang ready');
@@ -105,7 +109,11 @@ async function activate(context) {
         }
 
         const editor = vscode.window.activeTextEditor;
-        const selection = editor.selection;
+        // const selection = editor.selection;
+
+        // const t1 = si.getScopeAt(editor.document, new vscode.Position(1, 1));
+        // debugger;
+        // console.log(t1);
 
         const ranges = []
         let brackets = 0;
@@ -120,6 +128,17 @@ async function activate(context) {
             // for every character on the line, check to see if it's a paren
             for (let j = 0; j < text.length; j++) {
                 const char = text.charAt(j);
+                const { scopes } = hyperScopes.getScopeAt(editor.document, new vscode.Position(i, j));
+
+                if (
+                    scopes[scopes.length - 1] === 'comment.single.supercollider' ||
+                    scopes[scopes.length - 1] === 'comment.multiline.supercollider' ||
+                    scopes[scopes.length - 1] === 'string.quoted.double.supercollider' ||
+                    scopes[scopes.length - 1] === 'entity.name.symbol.supercollider' ||
+                    scopes[scopes.length - 1] === 'constant.character.escape.supercollider'
+                ) {
+                    continue;
+                }
                 if (char === '(' && brackets++ === 0) {
                     ranges.push([i])
                 } else if (char === ')' && --brackets === 0) {
@@ -137,7 +156,7 @@ async function activate(context) {
             return range[0] <= position.c && position.c <= range[1]
         });
 
-        // could probably use this too
+        // could  (should) probably use this instead of the code block below it
         // const selectionRange = new vscode.Range(
         //     selection.start.line,
         //     selection.start.character,
@@ -146,18 +165,18 @@ async function activate(context) {
         // );
         // const highlighted = editor.document.getText(selectionRange);
 
-
         let start = range[0];
         let end = range[1];
         let buf = '';
 
         for (let i = start; i <= end; i++) {
             const { text } = vscode.window.activeTextEditor.document.lineAt(i);
-            buf += text;
+            buf += text + '\n'; // have to append new line so that when interpreting it can see it as a new line. or else things break :( 
         }
 
         try {
             const result = await lang.interpret(buf, null, true, false);
+            console.log(result);
             log.appendLine(result.trim());
         }
         catch (err) {
