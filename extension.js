@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const { stringifyError } = require('./util');
 const Lang = require("supercolliderjs").lang.default;
 // const { flashHighlight } = require('./util');
 
@@ -30,7 +31,10 @@ async function activate(context) {
     let startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
         try {
             lang = new Lang({ sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang" });
-            lang.on('stdout', (message) => log.append(message.trim()));
+            lang.on('stdout', (message) => {
+                if (message == '\n') return;
+                log.append(message);
+            });
             lang.on('stderr', (message) => log.append(message.trim()));
             await lang.boot();
 
@@ -156,7 +160,6 @@ async function activate(context) {
                 }
             }
         }
-
         // Get where the current cursor is
         const position = vscode.window.activeTextEditor.selection.active;
 
@@ -166,7 +169,6 @@ async function activate(context) {
             return range[0] <= position.c && position.c <= range[1]
         });
 
-        // could  (should) probably use this instead of the code block below it
         const selectionRange = new vscode.Range(
             range[0],
             0,
@@ -176,15 +178,16 @@ async function activate(context) {
         const highlighted = editor.document.getText(selectionRange);
 
         try {
-            const result = await lang.interpret(highlighted, null, true, false);
+            const result = await lang.interpret(highlighted, null, true, true, true);
             console.log(result);
             log.appendLine(result.trim());
 
             // flashHighlight(vscode.window.activeTextEditor, selectionRange);
         }
         catch (err) {
-            log.appendLine(err);
-            console.error(err);
+            const errString = stringifyError(err);
+            log.appendLine(errString);
+            console.error(errString);
         }
     });
 
@@ -192,6 +195,8 @@ async function activate(context) {
 }
 
 exports.activate = activate;
+
+
 
 function deactivate() {
     if (lang) {
