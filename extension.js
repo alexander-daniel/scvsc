@@ -19,6 +19,14 @@ async function activate(context) {
     statusBar.text = 'sclang 🔴';
     statusBar.show();
 
+    vscode.window.onDidChangeActiveTextEditor(() => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const res = hyperScopes.reloadScope(editor.document);
+            console.log(res);
+        }
+    }, null, context.subscriptions);
+
     let startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
         try {
             lang = new Lang({ sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang" });
@@ -47,7 +55,7 @@ async function activate(context) {
         try {
             const result = await lang.interpret('s.boot', null, true, false);
             console.log(result);
-            log.appendLine(result.trim());
+            log.appendLine(result);
         } catch (err) {
             log.appendLine(err);
             console.error(err);
