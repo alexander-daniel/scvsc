@@ -14,3 +14,6 @@ function stringifyError(value) {
     }
     return value
 }
+module.exports = {
+    stringifyError
+};
