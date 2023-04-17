@@ -20,8 +20,8 @@ function stringifyError(value) {
 function flashHighlight(editor, range, duration = 250) {
 
     const highlightDecoration = vscode.window.createTextEditorDecorationType({
-        backgroundColor: 'rgba(1,1,1,0.25)',
-        border: '1px solid white',
+        backgroundColor: 'white',
+        // border: '1px solid white',
     });
 
     editor.setDecorations(highlightDecoration, [{ range }]);
