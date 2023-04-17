@@ -1,3 +1,5 @@
+const vscode = require('vscode');
+
 function stringifyError(value) {
     const { type, error } = value
     if (type === 'SyntaxError') {
@@ -14,6 +16,22 @@ function stringifyError(value) {
     }
     return value
 }
+
+function flashHighlight(editor, range, duration = 250) {
+
+    const highlightDecoration = vscode.window.createTextEditorDecorationType({
+        backgroundColor: 'rgba(1,1,1,0.25)',
+        border: '1px solid white',
+    });
+
+    editor.setDecorations(highlightDecoration, [{ range }]);
+
+    setTimeout(() => {
+        editor.setDecorations(highlightDecoration, []);
+    }, duration);
+}
+
 module.exports = {
+    flashHighlight,
     stringifyError
 };
