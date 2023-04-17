@@ -1,24 +1,41 @@
 const vscode = require('vscode');
+const { stringifyError } = require('./util');
 const Lang = require("supercolliderjs").lang.default;
+// const { flashHighlight } = require('./util');
+
+let lang = null;
 
 async function activate(context) {
-
-    let lang = null;
 
     const configuration = vscode.workspace.getConfiguration();
     const scLangPath = configuration.get('supercollider.sclang.cmd');
 
+    const hyperScopesExt = vscode.extensions.getExtension('draivin.hscopes');
+    const hyperScopes = await hyperScopesExt.activate();
+
     const log = vscode.window.createOutputChannel('vscsc');
+    log.show();
     const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
 
     statusBar.text = 'sclang 🔴';
     statusBar.show();
 
+    vscode.window.onDidChangeActiveTextEditor(() => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const res = hyperScopes.reloadScope(editor.document);
+            console.log(res);
+        }
+    }, null, context.subscriptions);
+
     let startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
         try {
             lang = new Lang({ sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang" });
-            lang.on('stdout', (message) => log.appendLine(message.trim()))
-            lang.on('stderr', (message) => log.appendLine(message.trim()))
+            lang.on('stdout', (message) => {
+                if (message == '\n') return;
+                log.append(message);
+            });
+            lang.on('stderr', (message) => log.append(message.trim()));
             await lang.boot();
 
             log.appendLine('sclang ready');
@@ -42,7 +59,7 @@ async function activate(context) {
         try {
             const result = await lang.interpret('s.boot', null, true, false);
             console.log(result);
-            log.appendLine(result.trim());
+            log.appendLine(result);
         } catch (err) {
             log.appendLine(err);
             console.error(err);
@@ -88,6 +105,7 @@ async function activate(context) {
             try {
                 const result = await lang.interpret(highlighted, null, true, false);
                 log.appendLine(result.trim());
+                // flashHighlight(vscode.window.activeTextEditor, selectionRange);
             }
             catch (err) {
                 log.appendLine(err);
@@ -105,8 +123,6 @@ async function activate(context) {
         }
 
         const editor = vscode.window.activeTextEditor;
-        const selection = editor.selection;
-
         const ranges = []
         let brackets = 0;
 
@@ -120,6 +136,23 @@ async function activate(context) {
             // for every character on the line, check to see if it's a paren
             for (let j = 0; j < text.length; j++) {
                 const char = text.charAt(j);
+
+                // not totally sure about this --
+                // it has been hastily ported it from hadron editor so I still gotta learn how it works.
+                const { scopes } = hyperScopes.getScopeAt(editor.document, new vscode.Position(i, j));
+                const scopesLength = scopes.length - 1;
+                const lastScope = scopes[scopesLength];
+                if (
+                    lastScope === 'comment.single.supercollider' ||
+                    lastScope === 'comment.multiline.supercollider' ||
+                    lastScope === 'string.quoted.double.supercollider' ||
+                    lastScope === 'entity.name.symbol.supercollider' ||
+                    lastScope === 'constant.character.escape.supercollider'
+                ) {
+                    continue;
+                }
+
+                // gather the bracket ranges
                 if (char === '(' && brackets++ === 0) {
                     ranges.push([i])
                 } else if (char === ')' && --brackets === 0) {
@@ -127,7 +160,6 @@ async function activate(context) {
                 }
             }
         }
-
         // Get where the current cursor is
         const position = vscode.window.activeTextEditor.selection.active;
 
@@ -137,34 +169,26 @@ async function activate(context) {
             return range[0] <= position.c && position.c <= range[1]
         });
 
-        // could probably use this too
-        // const selectionRange = new vscode.Range(
-        //     selection.start.line,
-        //     selection.start.character,
-        //     selection.end.line,
-        //     selection.end.character
-        // );
-        // const highlighted = editor.document.getText(selectionRange);
-
-
-        let start = range[0];
-        let end = range[1];
-        let buf = '';
-
-        for (let i = start; i <= end; i++) {
-            const { text } = vscode.window.activeTextEditor.document.lineAt(i);
-            buf += text;
-        }
+        const selectionRange = new vscode.Range(
+            range[0],
+            0,
+            range[1],
+            Infinity // probably want to calculate this value later from the last line length
+        );
+        const highlighted = editor.document.getText(selectionRange);
 
         try {
-            const result = await lang.interpret(buf, null, true, false);
+            const result = await lang.interpret(highlighted, null, true, true, true);
+            console.log(result);
             log.appendLine(result.trim());
+
+            // flashHighlight(vscode.window.activeTextEditor, selectionRange);
         }
         catch (err) {
-            log.appendLine(err);
-            console.error(err);
+            const errString = stringifyError(err);
+            log.appendLine(errString);
+            console.error(errString);
         }
-
     });
 
     context.subscriptions.push(evalRegion);
@@ -172,11 +196,12 @@ async function activate(context) {
 
 exports.activate = activate;
 
+
+
 function deactivate() {
     if (lang) {
         lang.quit();
         lang = null;
     }
-
 }
 exports.deactivate = deactivate;

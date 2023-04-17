@@ -88,10 +88,13 @@
     },
     "devDependencies": {
         "@types/node": "^7.0.43",
-        "eslint": "^4.11.0",
-        "vscode": "^1.1.6"
+        "eslint": "^4.11.0"
     },
     "dependencies": {
-        "supercolliderjs": "^1.0.1"
-    }
+        "supercolliderjs": "^1.0.1",
+        "vscode": "^1.1.6"
+    },
+    "extensionDependencies": [
+        "draivin.hscopes"
+    ]
 }
