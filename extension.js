@@ -1,7 +1,7 @@
 const vscode = require('vscode');
 const { stringifyError } = require('./util');
 const Lang = require("supercolliderjs").lang.default;
-// const { flashHighlight } = require('./util');
+const { flashHighlight } = require('./util');
 
 let lang = null;
 
@@ -9,17 +9,15 @@ async function activate(context) {
 
     const configuration = vscode.workspace.getConfiguration();
     const scLangPath = configuration.get('supercollider.sclang.cmd');
-
     const hyperScopesExt = vscode.extensions.getExtension('draivin.hscopes');
     const hyperScopes = await hyperScopesExt.activate();
-
-    const log = vscode.window.createOutputChannel('vscsc');
-    log.show();
+    const postWindow = vscode.window.createOutputChannel('vscsc postWindow');
     const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
 
     statusBar.text = 'sclang 🔴';
     statusBar.show();
 
+    // This refreshes the token scope, but I don't think this is optimized.. but I haven't run into issues yet.
     vscode.window.onDidChangeActiveTextEditor(() => {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
@@ -28,56 +26,70 @@ async function activate(context) {
         }
     }, null, context.subscriptions);
 
-    let startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
+    const startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
+
+        if (lang) {
+            postWindow.appendLine('there is already an insteand of sclang running.');
+            return;
+        }
+
         try {
-            lang = new Lang({ sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang" });
+
+            lang = new Lang({
+                sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang"
+            });
+
             lang.on('stdout', (message) => {
                 if (message == '\n') return;
-                log.append(message);
+                postWindow.append(message);
             });
-            lang.on('stderr', (message) => log.append(message.trim()));
+
+            lang.on('stderr', (message) => postWindow.append(message.trim()));
+
+            // Could probably conditional this based on a user config
+            postWindow.show();
+
             await lang.boot();
 
-            log.appendLine('sclang ready');
-
+            postWindow.appendLine('SCVSC: sclang is ready');
             statusBar.text = 'sclang 🟢';
             statusBar.show();
         }
         catch (err) {
-            log.appendLine(err);
+            postWindow.appendLine(err);
             console.log(err);
         }
     });
 
     context.subscriptions.push(startSCLang);
 
-    let bootSCServer = vscode.commands.registerCommand('supercollider.bootServer', async () => {
+    const bootSCServer = vscode.commands.registerCommand('supercollider.bootServer', async () => {
         if (!lang) {
-            log.appendLine('sclang not started, cannot boot scsynth using s.boot.');
+            postWindow.appendLine('sclang not started, cannot boot scsynth using s.boot.');
             return;
         }
         try {
             const result = await lang.interpret('s.boot', null, true, false);
             console.log(result);
-            log.appendLine(result);
+            postWindow.appendLine(result);
         } catch (err) {
-            log.appendLine(err);
+            postWindow.appendLine(err);
             console.error(err);
         }
     });
 
     context.subscriptions.push(bootSCServer);
 
-    let hushAll = vscode.commands.registerCommand('supercollider.hush', async () => {
+    const hushAll = vscode.commands.registerCommand('supercollider.hush', async () => {
         if (!lang) {
-            log.appendLine('sclang not started, cannot hush.');
+            postWindow.appendLine('sclang not started, cannot hush.');
             return;
         }
         try {
             const result = await lang.interpret('CmdPeriod.run', null, true, false);
-            log.appendLine(result.trim());
+            postWindow.appendLine(result.trim());
         } catch (err) {
-            log.appendLine(err);
+            postWindow.appendLine(err);
             console.error(err);
         }
 
@@ -85,10 +97,11 @@ async function activate(context) {
 
     context.subscriptions.push(hushAll);
 
-    let evaluateHighlighted = vscode.commands.registerCommand('supercollider.evaluateHighlighted', async () => {
+    const evaluateHighlighted = vscode.commands.registerCommand('supercollider.evaluateHighlighted', async () => {
 
         if (!lang) {
             console.error('sclang not started, cannot boot scsynth.');
+            return;
         }
 
         const editor = vscode.window.activeTextEditor;
@@ -104,11 +117,11 @@ async function activate(context) {
 
             try {
                 const result = await lang.interpret(highlighted, null, true, false);
-                log.appendLine(result.trim());
-                // flashHighlight(vscode.window.activeTextEditor, selectionRange);
+                postWindow.appendLine(result.trim());
+                flashHighlight(vscode.window.activeTextEditor, selectionRange);
             }
             catch (err) {
-                log.appendLine(err);
+                postWindow.appendLine(err);
                 console.error(err);
             }
         }
@@ -116,10 +129,11 @@ async function activate(context) {
 
     context.subscriptions.push(evaluateHighlighted);
 
-    let evalRegion = vscode.commands.registerCommand('supercollider.evalRegion', async () => {
+    const evalRegion = vscode.commands.registerCommand('supercollider.evalRegion', async () => {
 
         if (!lang) {
-            log.appendLine('sclang not started, cannot evaluate region.');
+            postWindow.appendLine('sclang not started, cannot evaluate region.');
+            return;
         }
 
         const editor = vscode.window.activeTextEditor;
@@ -169,24 +183,27 @@ async function activate(context) {
             return range[0] <= position.c && position.c <= range[1]
         });
 
+        const { text } = vscode.window.activeTextEditor.document.lineAt(range[1]);
+        const lastLineLength = text.length;
+
         const selectionRange = new vscode.Range(
             range[0],
-            0,
+            0, // will need to calculate ... because what if the paren is not the first char on the line? does that matter?
             range[1],
-            Infinity // probably want to calculate this value later from the last line length
+            lastLineLength
         );
         const highlighted = editor.document.getText(selectionRange);
+
 
         try {
             const result = await lang.interpret(highlighted, null, true, true, true);
             console.log(result);
-            log.appendLine(result.trim());
-
-            // flashHighlight(vscode.window.activeTextEditor, selectionRange);
+            postWindow.appendLine(result.trim());
+            flashHighlight(vscode.window.activeTextEditor, selectionRange);
         }
         catch (err) {
             const errString = stringifyError(err);
-            log.appendLine(errString);
+            postWindow.appendLine(errString);
             console.error(errString);
         }
     });
