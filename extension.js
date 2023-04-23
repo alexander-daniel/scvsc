@@ -17,6 +17,7 @@ async function activate(context) {
     statusBar.text = 'sclang 🔴';
     statusBar.show();
 
+    // This refreshes the token scope, but I don't think this is optimized.. but I haven't run into issues yet.
     vscode.window.onDidChangeActiveTextEditor(() => {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
@@ -26,12 +27,23 @@ async function activate(context) {
     }, null, context.subscriptions);
 
     const startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', async () => {
+
+        if (lang) {
+            postWindow.appendLine('there is already an insteand of sclang running.');
+            return;
+        }
+
         try {
-            lang = new Lang({ sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang" });
+
+            lang = new Lang({
+                sclang: scLangPath || "/Applications/SuperCollider.app/Contents/MacOS/sclang"
+            });
+
             lang.on('stdout', (message) => {
                 if (message == '\n') return;
                 postWindow.append(message);
             });
+
             lang.on('stderr', (message) => postWindow.append(message.trim()));
 
             // Could probably conditional this based on a user config
@@ -39,8 +51,7 @@ async function activate(context) {
 
             await lang.boot();
 
-            postWindow.appendLine('sclang ready');
-
+            postWindow.appendLine('SCVSC: sclang is ready');
             statusBar.text = 'sclang 🟢';
             statusBar.show();
         }
