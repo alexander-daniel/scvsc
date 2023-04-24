@@ -4,37 +4,35 @@
 extension for
 [Visual Studio Code](https://code.visualstudio.com/).
 
+Highly inspired by [Hadron](https://github.com/htor/hadron-editor), and took some code from [vscode-supercollider](https://github.com/jatinchowdhury18/vscode-supercollider). There's still a lot to learn from Hadron!
 
 ## Features
 - Starting `sclang` and `scsynth` from vscode
 - Evaluating selected text
 - Evaluating regions between parentheses `( )`
 - Hushing the server
+- Highlight the lines that are being sent to be interpreted for like 2 seconds.
 
 I've only tested this on MacOS.
 
 ## Instructions
 
-1. Install the scvsc extension (only development versions right now)
+1. Install the scvsc extension
 2. Install [SuperCollider](https://supercollider.github.io/).
-
-
-## Configure
-Gotta finish these while also detailing how to find your sclang and how to set it dynamically since right now i had to go into node_modules and hard-code it and that's not what i want to do.
-
+3. (optional) configure the location of your `sclang` instance in your vscode `settings.json`:
+    - example: `"supercollider.sclang.cmd": "/Applications/SuperCollider.app/Contents/MacOS/sclang",`
+4. the `scvsc` commands will be available in your vscode command palette, and you can map them to whatever keyboard shortcuts you like. 
 
 ## Reasonable Future Improvements
-- Highlight the lines that are being sent to be interpreted for like 2 seconds.
-- auto-open up output log of extension (postWindow) when starting sclang.
 - open up docs in browser
+- make the status bar more informative / nicer looking
 
 ## Hoop Dreams
 - Auto-complete or suggestions
 - use a language server or something or learn about language server in vscode
 - open up docs directly in vscode? some kinda html renderer or something?
 
-
 ## License
 
-vscode-supercollider is licensed under the
+scvsc is licensed under the
 [MIT License](https://opensource.org/licenses/MIT).
