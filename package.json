@@ -3,7 +3,7 @@
     "displayName": "scvsc",
     "description": "vscode as a supercollider client",
     "version": "0.0.1",
-    "publisher": "alexander-daniel",
+    "publisher": "scvsc",
     "homepage": "",
     "license": "MIT",
     "engines": {
@@ -88,12 +88,10 @@
     },
     "devDependencies": {
         "@types/node": "^7.0.43",
-        "eslint": "^4.11.0"
-    },
-    "dependencies": {
-        "supercolliderjs": "^1.0.1",
+        "eslint": "^4.11.0",
         "vscode": "^1.1.6"
     },
+    "dependencies": {},
     "extensionDependencies": [
         "draivin.hscopes"
     ]
