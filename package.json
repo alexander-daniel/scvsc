@@ -91,7 +91,9 @@
         "eslint": "^4.11.0",
         "vscode": "^1.1.6"
     },
-    "dependencies": {},
+    "dependencies": {
+        "supercolliderjs": "^1.0.1"
+    },
     "extensionDependencies": [
         "draivin.hscopes"
     ]
