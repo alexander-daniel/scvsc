@@ -2,7 +2,7 @@
     "name": "scvsc",
     "displayName": "scvsc",
     "description": "vscode as a supercollider client",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "scvsc",
     "homepage": "",
     "license": "MIT",
