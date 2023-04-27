@@ -43,6 +43,11 @@
                 "category": "SuperCollider"
             },
             {
+                "command": "supercollider.stopSCLang",
+                "title": "Stop sclang",
+                "category": "SuperCollider"
+            },
+            {
                 "command": "supercollider.bootServer",
                 "title": "Boot a SuperCollider Server (scsynth)",
                 "category": "SuperCollider"
