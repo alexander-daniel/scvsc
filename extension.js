@@ -63,6 +63,27 @@ async function activate(context) {
 
     context.subscriptions.push(startSCLang);
 
+    const stopSCLang = vscode.commands.registerCommand('supercollider.stopSCLang', async () => {
+
+        if (!lang) {
+            postWindow.appendLine('sclang is not currently running.');
+            return;
+        }
+
+        try {
+            await lang.quit();
+            lang = null;
+            statusBar.text = 'sclang 🔴';
+            statusBar.show();
+        }
+        catch (err) {
+            postWindow.appendLine(err);
+            console.log(err);
+        }
+    });
+
+    context.subscriptions.push(stopSCLang);
+
     const bootSCServer = vscode.commands.registerCommand('supercollider.bootServer', async () => {
         if (!lang) {
             postWindow.appendLine('sclang not started, cannot boot scsynth using s.boot.');
