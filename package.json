@@ -58,13 +58,8 @@
         "category": "SuperCollider"
       },
       {
-        "command": "supercollider.evaluateHighlighted",
-        "title": "Evaluate Highlighted",
-        "category": "SuperCollider"
-      },
-      {
-        "command": "supercollider.evalRegion",
-        "title": "Evaluate Region",
+        "command": "supercollider.evaluate",
+        "title": "Evaluate",
         "category": "SuperCollider"
       }
     ],
