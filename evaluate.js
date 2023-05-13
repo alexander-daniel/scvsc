@@ -1,12 +1,15 @@
+const vscode = require('vscode');
 const { flashHighlight, stringifyError } = require('./util');
 
-async function evalHighlighted(lang, selection, vscode, postWindow, editor) {
+async function evalHighlighted(lang, postWindow, selection) {
   const selectionRange = new vscode.Range(
     selection.start.line,
     selection.start.character,
     selection.end.line,
     selection.end.character
   );
+
+  const editor = vscode.window.activeTextEditor;
   const highlighted = editor.document.getText(selectionRange);
 
   try {
@@ -19,9 +22,14 @@ async function evalHighlighted(lang, selection, vscode, postWindow, editor) {
   }
 }
 
-async function evalRegion(lang, vscode, postWindow, editor, hyperScopes) {
+async function evalRegion(lang, postWindow) {
   const ranges = [];
   let brackets = 0;
+
+  const hyperScopesExt = vscode.extensions.getExtension('draivin.hscopes');
+  const hyperScopes = await hyperScopesExt.activate();
+  const editor = vscode.window.activeTextEditor;
+  const highlighted = editor.document.getText(selectionRange);
 
   // Get the total line count of the open script
   const lineCount = vscode.window.activeTextEditor.document.lineCount;

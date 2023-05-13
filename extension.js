@@ -144,9 +144,9 @@ async function activate(context) {
       const selection = editor.selection;
 
       if (selection && !selection.isEmpty) {
-        evalHighlighted(lang, vscode, postWindow, editor, selection);
+        evalHighlighted(lang, postWindow, selection);
       } else {
-        evalRegion(lang, vscode, postWindow, editor, hyperScopes);
+        evalRegion(lang, postWindow);
       }
     }
   );
