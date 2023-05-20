@@ -38,6 +38,11 @@
     "keybindings": [],
     "commands": [
       {
+        "command": "supercollider.startSCLang",
+        "title": "Start SC Lang",
+        "category": "SuperCollider"
+      },
+      {
         "command": "supercollider.boot",
         "title": "Boot",
         "category": "SuperCollider"
