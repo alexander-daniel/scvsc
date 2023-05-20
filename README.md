@@ -32,7 +32,6 @@ I've only tested this on MacOS.
 2. Run `npm install` in repo root at the command line.
 3. Open `extension.js` in VSCode and press `F5`. Select the option to run the "Extension Development Host."
 4. Open a `.scd` file. You may be prompted to install the HyperScope vscode extension, allow it. You will see an "sclang" indicator in the lower left.
-5. Press `Ctrl+Shift+P` to open the command palette. Search for "SuperCollider" to find options such as "start sclang."
 
 ## Reasonable Future Improvements
 
