@@ -1,9 +1,28 @@
 const vscode = require('vscode');
+const fs = require('fs');
+const path = require('path');
 const { stringifyError } = require('./util');
 const Lang = require('supercolliderjs').lang.default;
 const { flashHighlight } = require('./util');
 
 let lang = null;
+
+function getDefaultSclangExecutable() {
+  switch (process.platform) {
+    case 'darwin':
+      return '/Applications/SuperCollider.app/Contents/MacOS/sclang';
+    case 'win32':
+      const root = 'C:\\Program Files';
+      const directories = fs.readdirSync(root, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory() && entry.name.startsWith("SuperCollider-"));
+      if (directories.length > 0) {
+        return path.join(root, directories[0].name, 'sclang.exe');
+      }
+      return 'sclang';
+    default:
+      return 'sclang';
+  }
+}
 
 async function activate(context) {
   const configuration = vscode.workspace.getConfiguration();
@@ -41,9 +60,7 @@ async function activate(context) {
 
       try {
         lang = new Lang({
-          sclang:
-            scLangPath ||
-            '/Applications/SuperCollider.app/Contents/MacOS/sclang',
+          sclang: scLangPath || getDefaultSclangExecutable(),
         });
 
         lang.on('stdout', (message) => {
