@@ -11,10 +11,11 @@ const SCLANG_STATUS_BAR = 'sclang';
 const SCLANG_STATUS_BAR_OFF = `${SCLANG_STATUS_BAR} ⭕`;
 const SCLANG_STATUS_BAR_ON = `${SCLANG_STATUS_BAR} 🟢`;
 
+statusBar.text = SCLANG_STATUS_BAR_OFF;
+statusBar.command = 'supercollider.toggleSCLang';
+statusBar.tooltip = 'Click to boot or quit the SuperCollider interpreter.';
+
 async function initStatusBar() {
-  statusBar.text = SCLANG_STATUS_BAR_OFF;
-  statusBar.command = 'supercollider.toggleSCLang';
-  statusBar.tooltip = 'Click to boot or quit the SuperCollider interpreter.';
   statusBar.show();
   return;
 }
