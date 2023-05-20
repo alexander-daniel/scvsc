@@ -81,6 +81,11 @@
         "category": "SuperCollider"
       },
       {
+        "command": "supercollider.toggleSCLang",
+        "title": "Start/stop sclang",
+        "category": "SuperCollider"
+      },
+      {
         "command": "supercollider.bootServer",
         "title": "Boot a SuperCollider Server (scsynth)",
         "category": "SuperCollider"

@@ -37,6 +37,8 @@ async function activate(context) {
   const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
 
   statusBar.text = SCLANG_STATUS_BAR_OFF;
+  statusBar.command = "supercollider.toggleSCLang";
+  statusBar.tooltip = "Click to boot or quit the SuperCollider interpreter.";
   statusBar.show();
 
   // This refreshes the token scope, but I don't think this is optimized.. but I haven't run into issues yet.
@@ -52,66 +54,81 @@ async function activate(context) {
     context.subscriptions
   );
 
-  const startSCLang = vscode.commands.registerCommand(
+  async function startSclang() {
+    if (lang) {
+      postWindow.appendLine(
+        'there is already an insteand of sclang running.'
+      );
+      return;
+    }
+    try {
+      lang = new Lang({
+        sclang: scLangPath || getDefaultSclangExecutable(),
+      });
+
+      lang.on('stdout', (message) => {
+        if (message == '\n') return;
+        postWindow.append(message);
+      });
+
+      lang.on('stderr', (message) => postWindow.append(message.trim()));
+
+      // Could probably conditional this based on a user config
+      postWindow.show();
+
+      await lang.boot();
+
+      postWindow.appendLine('SCVSC: sclang is ready');
+      statusBar.text = SCLANG_STATUS_BAR_ON;
+      statusBar.show();
+    } catch (err) {
+      postWindow.appendLine(err);
+      console.log(err);
+    }
+  }
+
+  async function stopSclang() {
+    if (!lang) {
+      postWindow.appendLine('sclang is not currently running.');
+      return;
+    }
+
+    try {
+      await lang.quit();
+      lang = null;
+      statusBar.text = SCLANG_STATUS_BAR_OFF;
+      statusBar.show();
+    } catch (err) {
+      postWindow.appendLine(err);
+      console.log(err);
+    }
+  }
+
+  async function toggleSclang() {
+    if (lang === null) {
+      startSclang();
+    } else {
+      stopSclang();
+    }
+  }
+
+  const startSCLangCommand = vscode.commands.registerCommand(
     'supercollider.startSCLang',
-    async () => {
-      if (lang) {
-        postWindow.appendLine(
-          'there is already an insteand of sclang running.'
-        );
-        return;
-      }
-
-      try {
-        lang = new Lang({
-          sclang: scLangPath || getDefaultSclangExecutable(),
-        });
-
-        lang.on('stdout', (message) => {
-          if (message == '\n') return;
-          postWindow.append(message);
-        });
-
-        lang.on('stderr', (message) => postWindow.append(message.trim()));
-
-        // Could probably conditional this based on a user config
-        postWindow.show();
-
-        await lang.boot();
-
-        postWindow.appendLine('SCVSC: sclang is ready');
-        statusBar.text = SCLANG_STATUS_BAR_ON;
-        statusBar.show();
-      } catch (err) {
-        postWindow.appendLine(err);
-        console.log(err);
-      }
-    }
+    startSclang
   );
+  context.subscriptions.push(startSCLangCommand);
 
-  context.subscriptions.push(startSCLang);
-
-  const stopSCLang = vscode.commands.registerCommand(
+  const stopSCLangCommand = vscode.commands.registerCommand(
     'supercollider.stopSCLang',
-    async () => {
-      if (!lang) {
-        postWindow.appendLine('sclang is not currently running.');
-        return;
-      }
-
-      try {
-        await lang.quit();
-        lang = null;
-        statusBar.text = SCLANG_STATUS_BAR_OFF;
-        statusBar.show();
-      } catch (err) {
-        postWindow.appendLine(err);
-        console.log(err);
-      }
-    }
+    stopSclang
   );
+  context.subscriptions.push(stopSCLangCommand);
 
-  context.subscriptions.push(stopSCLang);
+  const toggleSCLangCommand = vscode.commands.registerCommand(
+    'supercollider.toggleSCLang',
+    toggleSclang
+  );
+  context.subscriptions.push(toggleSCLangCommand);
 
   const bootSCServer = vscode.commands.registerCommand(
     'supercollider.bootServer',
