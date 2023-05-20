@@ -23,7 +23,7 @@ async function startSCLang() {
   const configuration = vscode.workspace.getConfiguration();
   const scLangPath = configuration.get('supercollider.sclang.cmd');
   if (lang) {
-    postWindow.appendLine('there is already an insteand of sclang running.');
+    postWindow.appendLine('there is already an instance of sclang running.');
     return;
   }
 
