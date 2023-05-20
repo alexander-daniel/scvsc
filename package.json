@@ -43,11 +43,6 @@
         "category": "SuperCollider"
       },
       {
-        "command": "supercollider.bootSCSynth",
-        "title": "Boot SC Synth",
-        "category": "SuperCollider"
-      },
-      {
         "command": "supercollider.stopSCLang",
         "title": "Stop SC Lang",
         "category": "SuperCollider"
@@ -55,6 +50,11 @@
       {
         "command": "supercollider.rebootSCLang",
         "title": "Reboot SC Lang",
+        "category": "SuperCollider"
+      },
+      {
+        "command": "supercollider.bootSCSynth",
+        "title": "Boot SC Synth",
         "category": "SuperCollider"
       },
       {
