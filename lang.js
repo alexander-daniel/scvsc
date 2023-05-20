@@ -46,21 +46,6 @@ async function startSCLang() {
   }
 }
 
-async function bootSCSynth() {
-  if (!lang) {
-    postWindow.appendLine('sclang not started, cannot boot scsynth using s.boot.');
-    return;
-  }
-  try {
-    const result = await lang.interpret('s.boot', null, true, false);
-    console.log(result);
-    postWindow.appendLine(result);
-  } catch (err) {
-    postWindow.appendLine(err);
-    console.error(err);
-  }
-}
-
 async function stopSCLang() {
   try {
     await lang.quit();
@@ -82,6 +67,22 @@ async function rebootSCLang() {
     console.log(err);
   }
 }
+
+async function bootSCSynth() {
+  if (!lang) {
+    postWindow.appendLine('sclang not started, cannot boot scsynth using s.boot.');
+    return;
+  }
+  try {
+    const result = await lang.interpret('s.boot', null, true, false);
+    console.log(result);
+    postWindow.appendLine(result);
+  } catch (err) {
+    postWindow.appendLine(err);
+    console.error(err);
+  }
+}
+
 
 async function evaluate() {
   if (!lang) {
@@ -204,9 +205,9 @@ async function hush() {
 module.exports = {
   initStatusBar,
   startSCLang,
-  bootSCSynth,
   stopSCLang,
   rebootSCLang,
+  bootSCSynth,
   evaluate,
   hush,
 };

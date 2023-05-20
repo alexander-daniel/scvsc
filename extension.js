@@ -21,8 +21,8 @@ async function activate(context) {
   );
 
   const startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', SC.startSCLang);
-  const bootSCSynth = vscode.commands.registerCommand('supercollider.startSCSynth', SC.bootSCSynth);
   const stopSCLang = vscode.commands.registerCommand('supercollider.stopSCLang', SC.stopSCLang);
+  const bootSCSynth = vscode.commands.registerCommand('supercollider.startSCSynth', SC.bootSCSynth);
   const rebootSCLang = vscode.commands.registerCommand('supercollider.rebootSCLang', SC.rebootSCLang);
   const evaluate = vscode.commands.registerCommand('supercollider.evaluate', SC.evaluate);
   const hush = vscode.commands.registerCommand('supercollider.hush', SC.hush);
@@ -32,7 +32,7 @@ async function activate(context) {
 exports.activate = activate;
 
 async function deactivate() {
-  await SC.quit();
+  await SC.rebootSCLang();
 }
 
 exports.deactivate = deactivate;
