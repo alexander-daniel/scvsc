@@ -83,7 +83,6 @@ async function bootSCSynth() {
   }
 }
 
-
 async function evaluate() {
   if (!lang) {
     console.error('sclang not started, cannot boot scsynth.');
