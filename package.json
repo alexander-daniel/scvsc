@@ -38,28 +38,28 @@
     "keybindings": [],
     "commands": [
       {
-        "command": "supercollider.startSCLang",
-        "title": "Start sclang",
+        "command": "supercollider.boot",
+        "title": "Boot",
         "category": "SuperCollider"
       },
       {
-        "command": "supercollider.stopSCLang",
-        "title": "Stop sclang",
+        "command": "supercollider.quit",
+        "title": "Quit",
         "category": "SuperCollider"
       },
       {
-        "command": "supercollider.bootServer",
-        "title": "Boot a SuperCollider Server (scsynth)",
-        "category": "SuperCollider"
-      },
-      {
-        "command": "supercollider.hush",
-        "title": "Hush",
+        "command": "supercollider.reboot",
+        "title": "Reboot",
         "category": "SuperCollider"
       },
       {
         "command": "supercollider.evaluate",
         "title": "Evaluate",
+        "category": "SuperCollider"
+      },
+      {
+        "command": "supercollider.hush",
+        "title": "Hush",
         "category": "SuperCollider"
       }
     ],
