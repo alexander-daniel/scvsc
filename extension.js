@@ -5,6 +5,10 @@ const { stringifyError } = require('./util');
 const Lang = require('supercolliderjs').lang.default;
 const { flashHighlight } = require('./util');
 
+const SCLANG_STATUS_BAR = 'sclang';
+const SCLANG_STATUS_BAR_OFF = `${SCLANG_STATUS_BAR} ⭕`;
+const SCLANG_STATUS_BAR_ON = `${SCLANG_STATUS_BAR} 🟢`;
+
 let lang = null;
 
 function getDefaultSclangExecutable() {
@@ -32,7 +36,7 @@ async function activate(context) {
   const postWindow = vscode.window.createOutputChannel('vscsc postWindow');
   const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
 
-  statusBar.text = 'sclang 🔴';
+  statusBar.text = SCLANG_STATUS_BAR_OFF;
   statusBar.show();
 
   // This refreshes the token scope, but I don't think this is optimized.. but I haven't run into issues yet.
@@ -76,7 +80,7 @@ async function activate(context) {
         await lang.boot();
 
         postWindow.appendLine('SCVSC: sclang is ready');
-        statusBar.text = 'sclang 🟢';
+        statusBar.text = SCLANG_STATUS_BAR_ON;
         statusBar.show();
       } catch (err) {
         postWindow.appendLine(err);
@@ -98,7 +102,7 @@ async function activate(context) {
       try {
         await lang.quit();
         lang = null;
-        statusBar.text = 'sclang 🔴';
+        statusBar.text = SCLANG_STATUS_BAR_OFF;
         statusBar.show();
       } catch (err) {
         postWindow.appendLine(err);
