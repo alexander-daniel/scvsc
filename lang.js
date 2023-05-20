@@ -1,13 +1,20 @@
 const vscode = require('vscode');
-const { flashHighlight, stringifyError } = require('./util');
+const { flashHighlight, stringifyError, getDefaultSCLangExecutable } = require('./util');
+
 const Lang = require('supercolliderjs').lang.default;
 let lang = null;
 
 const postWindow = vscode.window.createOutputChannel('scvsc postWindow');
 const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
 
+const SCLANG_STATUS_BAR = 'sclang';
+const SCLANG_STATUS_BAR_OFF = `${SCLANG_STATUS_BAR} ⭕`;
+const SCLANG_STATUS_BAR_ON = `${SCLANG_STATUS_BAR} 🟢`;
+
 async function initStatusBar() {
-  statusBar.text = 'sclang 🔴';
+  statusBar.text = SCLANG_STATUS_BAR_OFF;
+  statusBar.command = 'supercollider.toggleSCLang';
+  statusBar.tooltip = 'Click to boot or quit the SuperCollider interpreter.';
   statusBar.show();
   return;
 }
@@ -22,7 +29,7 @@ async function startSCLang() {
 
   try {
     lang = new Lang({
-      sclang: scLangPath || '/Applications/SuperCollider.app/Contents/MacOS/sclang',
+      sclang: scLangPath || getDefaultSCLangExecutable(),
     });
 
     lang.on('stdout', (message) => {
@@ -38,7 +45,7 @@ async function startSCLang() {
     await lang.boot();
 
     postWindow.appendLine('SCVSC: sclang is ready');
-    statusBar.text = 'sclang 🟢';
+    statusBar.text = SCLANG_STATUS_BAR_ON;
     statusBar.show();
   } catch (err) {
     postWindow.appendLine(err);
@@ -50,7 +57,7 @@ async function stopSCLang() {
   try {
     await lang.quit();
     lang = null;
-    statusBar.text = 'sclang 🔴';
+    statusBar.text = SCLANG_STATUS_BAR_OFF;
     statusBar.show();
   } catch (err) {
     postWindow.appendLine(err);
@@ -65,6 +72,14 @@ async function rebootSCLang() {
   } catch (err) {
     postWindow.appendLine(err);
     console.log(err);
+  }
+}
+
+async function toggleSCLang() {
+  if (lang === null) {
+    startSCLang();
+  } else {
+    stopSCLang();
   }
 }
 
@@ -206,6 +221,7 @@ module.exports = {
   startSCLang,
   stopSCLang,
   rebootSCLang,
+  toggleSCLang,
   bootSCSynth,
   evaluate,
   hush,

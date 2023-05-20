@@ -2,10 +2,10 @@ const vscode = require('vscode');
 const SC = require('./lang');
 
 async function activate(context) {
-  SC.initStatusBar();
-
   const hyperScopesExt = vscode.extensions.getExtension('draivin.hscopes');
   const hyperScopes = await hyperScopesExt.activate();
+  
+  SC.initStatusBar();
 
   // This refreshes the token scope, but I don't think this is optimized.. but I haven't run into issues yet.
   vscode.window.onDidChangeActiveTextEditor(
@@ -22,17 +22,18 @@ async function activate(context) {
 
   const startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', SC.startSCLang);
   const stopSCLang = vscode.commands.registerCommand('supercollider.stopSCLang', SC.stopSCLang);
-  const bootSCSynth = vscode.commands.registerCommand('supercollider.startSCSynth', SC.bootSCSynth);
   const rebootSCLang = vscode.commands.registerCommand('supercollider.rebootSCLang', SC.rebootSCLang);
+  const toggleSCLang = vscode.commands.registerCommand('supercollider.toggleSCLang', SC.toggleSCLang);
+  const bootSCSynth = vscode.commands.registerCommand('supercollider.bootSCSynth', SC.bootSCSynth);
   const evaluate = vscode.commands.registerCommand('supercollider.evaluate', SC.evaluate);
   const hush = vscode.commands.registerCommand('supercollider.hush', SC.hush);
-  context.subscriptions.push(startSCLang, stopSCLang, bootSCSynth, rebootSCLang, evaluate, hush);
+  context.subscriptions.push(startSCLang, stopSCLang, rebootSCLang, toggleSCLang, bootSCSynth, evaluate, hush);
 }
 
 exports.activate = activate;
 
 async function deactivate() {
-  await SC.rebootSCLang();
+  await SC.stopSCLang();
 }
 
 exports.deactivate = deactivate;
