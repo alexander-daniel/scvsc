@@ -22,7 +22,7 @@
     "configuration": [
       {
         "type": "object",
-        "title": "SuperCollider Configuration",
+        "title": "SuperCollider",
         "properties": {
           "supercollider.sclang.cmd": {
             "type": [
@@ -33,9 +33,42 @@
             "description": "Specifies the correct sclang command for your SuperCollider installation."
           }
         }
+      },
+      {
+        "type": "object",
+        "title": "SCVSC Editor",
+        "properties": {
+          "scvsc.useScideKeybindings": {
+            "type": [
+              "boolean"
+            ],
+            "default": false,
+            "description": "If enabled, emulate keybindings from SCIDE."
+          }
+        }
       }
     ],
-    "keybindings": [],
+    "keybindings": [
+      {
+        "command": "supercollider.hush",
+        "key": "ctrl+.",
+        "mac": "cmd+.",
+        "when": "editorLangId == supercollider && config.scvsc.useScideKeybindings",
+        "comment": "Safety-critical command to override extremely loud sounds, so the context is more generic than other commands."
+      },
+      {
+        "command": "supercollider.bootServer",
+        "key": "ctrl+b",
+        "mac": "cmd+b",
+        "when": "editorTextFocus && config.scvsc.useScideKeybindings"
+      },
+      {
+        "command": "supercollider.evalRegion",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter",
+        "when": "editorTextFocus && config.scvsc.useScideKeybindings"
+      }
+    ],
     "commands": [
       {
         "command": "supercollider.startSCLang",
