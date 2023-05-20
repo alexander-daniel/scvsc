@@ -20,12 +20,13 @@ async function activate(context) {
     context.subscriptions
   );
 
+  const startSCLang = vscode.commands.registerCommand('supercollider.startSCLang', SC.startSCLang);
   const boot = vscode.commands.registerCommand('supercollider.boot', SC.boot);
   const quit = vscode.commands.registerCommand('supercollider.quit', SC.quit);
   const reboot = vscode.commands.registerCommand('supercollider.reboot', SC.reboot);
   const evaluate = vscode.commands.registerCommand('supercollider.evaluate', SC.evaluate);
   const hush = vscode.commands.registerCommand('supercollider.hush', SC.hush);
-  context.subscriptions.push(boot, quit, reboot, evaluate, hush);
+  context.subscriptions.push(startSCLang, boot, quit, reboot, evaluate, hush);
 }
 
 exports.activate = activate;

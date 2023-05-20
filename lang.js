@@ -12,11 +12,11 @@ async function initStatusBar() {
   return;
 }
 
-async function boot() {
+async function startSCLang() {
   const configuration = vscode.workspace.getConfiguration();
   const scLangPath = configuration.get('supercollider.sclang.cmd');
   if (lang) {
-    postWindow.appendLine('there is already an instance of sclang running.');
+    postWindow.appendLine('there is already an insteand of sclang running.');
     return;
   }
 
@@ -40,13 +40,24 @@ async function boot() {
     postWindow.appendLine('SCVSC: sclang is ready');
     statusBar.text = 'sclang 🟢';
     statusBar.show();
+  } catch (err) {
+    postWindow.appendLine(err);
+    console.log(err);
+  }
+}
 
+async function boot() {
+  if (!lang) {
+    postWindow.appendLine('sclang not started, cannot boot scsynth using s.boot.');
+    return;
+  }
+  try {
     const result = await lang.interpret('s.boot', null, true, false);
     console.log(result);
     postWindow.appendLine(result);
   } catch (err) {
     postWindow.appendLine(err);
-    console.log(err);
+    console.error(err);
   }
 }
 
@@ -192,6 +203,7 @@ async function hush() {
 
 module.exports = {
   initStatusBar,
+  startSCLang,
   boot,
   quit,
   reboot,
