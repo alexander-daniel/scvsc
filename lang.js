@@ -46,7 +46,7 @@ async function startSCLang() {
   }
 }
 
-async function boot() {
+async function bootSCSynth() {
   if (!lang) {
     postWindow.appendLine('sclang not started, cannot boot scsynth using s.boot.');
     return;
@@ -61,7 +61,7 @@ async function boot() {
   }
 }
 
-async function quit() {
+async function stopSCLang() {
   try {
     await lang.quit();
     lang = null;
@@ -73,7 +73,7 @@ async function quit() {
   }
 }
 
-async function reboot() {
+async function rebootSCLang() {
   try {
     await lang.quit();
     await lang.boot();
@@ -204,9 +204,9 @@ async function hush() {
 module.exports = {
   initStatusBar,
   startSCLang,
-  boot,
-  quit,
-  reboot,
+  bootSCSynth,
+  stopSCLang,
+  rebootSCLang,
   evaluate,
   hush,
 };

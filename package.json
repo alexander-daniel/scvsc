@@ -43,18 +43,18 @@
         "category": "SuperCollider"
       },
       {
-        "command": "supercollider.boot",
-        "title": "Boot",
+        "command": "supercollider.bootSCSynth",
+        "title": "Boot SC Synth",
         "category": "SuperCollider"
       },
       {
-        "command": "supercollider.quit",
-        "title": "Quit",
+        "command": "supercollider.stopSCLang",
+        "title": "Stop SC Lang",
         "category": "SuperCollider"
       },
       {
-        "command": "supercollider.reboot",
-        "title": "Reboot",
+        "command": "supercollider.rebootSCLang",
+        "title": "Reboot SC Lang",
         "category": "SuperCollider"
       },
       {
