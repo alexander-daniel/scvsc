@@ -22,7 +22,16 @@ I've only tested this on MacOS.
 2. Install [SuperCollider](https://supercollider.github.io/).
 3. (optional) configure the location of your `sclang` instance in your vscode `settings.json`:
    - example: `"supercollider.sclang.cmd": "/Applications/SuperCollider.app/Contents/MacOS/sclang",`
-4. the `scvsc` commands will be available in your vscode command palette, and you can map them to whatever keyboard shortcuts you like.
+4. The `scvsc` commands will be available in your vscode command palette, and you can map them to whatever keyboard shortcuts you like.
+5. Alternatively, if you want to emulate the SCIDE keybindings, go to File -> Preferences -> Settings -> Extensions -> scvsc and set "Use Scide Keybindings" to `true`.
+
+
+### Installing for development
+
+1. Clone repository.
+2. Run `npm install` in repo root at the command line.
+3. Open `extension.js` in VSCode and press `F5`. Select the option to run the "Extension Development Host."
+4. Open a `.scd` file. You may be prompted to install the HyperScope vscode extension, allow it. You will see an "sclang" indicator in the lower left.
 
 ## Reasonable Future Improvements
 
