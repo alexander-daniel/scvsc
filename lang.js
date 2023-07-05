@@ -1,24 +1,11 @@
 const vscode = require('vscode');
+const statusBar = require('./status-bar');
 const { flashHighlight, stringifyError, getDefaultSCLangExecutable } = require('./util');
 
 const Lang = require('supercolliderjs').lang.default;
 let lang = null;
 
 const postWindow = vscode.window.createOutputChannel('scvsc postWindow');
-const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
-
-const SCLANG_STATUS_BAR = 'sclang';
-const SCLANG_STATUS_BAR_OFF = `${SCLANG_STATUS_BAR} ⭕`;
-const SCLANG_STATUS_BAR_ON = `${SCLANG_STATUS_BAR} 🟢`;
-
-statusBar.text = SCLANG_STATUS_BAR_OFF;
-statusBar.command = 'supercollider.toggleSCLang';
-statusBar.tooltip = 'Click to boot or quit the SuperCollider interpreter.';
-
-async function initStatusBar() {
-  statusBar.show();
-  return;
-}
 
 async function startSCLang() {
   const configuration = vscode.workspace.getConfiguration();
@@ -46,7 +33,7 @@ async function startSCLang() {
     await lang.boot();
 
     postWindow.appendLine('SCVSC: sclang is ready');
-    statusBar.text = SCLANG_STATUS_BAR_ON;
+    statusBar.setText(statusBar.SCLANG_STATUS_BAR_ON);
     statusBar.show();
   } catch (err) {
     postWindow.appendLine(err);
@@ -59,7 +46,7 @@ async function stopSCLang() {
     await lang.interpret('Server.killAll');
     await lang.quit();
     lang = null;
-    statusBar.text = SCLANG_STATUS_BAR_OFF;
+    statusBar.setText(statusBar.SCLANG_STATUS_BAR_OFF);
     statusBar.show();
   } catch (err) {
     postWindow.appendLine(err);
@@ -219,7 +206,6 @@ async function hush() {
 }
 
 module.exports = {
-  initStatusBar,
   startSCLang,
   stopSCLang,
   rebootSCLang,

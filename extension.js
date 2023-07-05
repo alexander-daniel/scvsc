@@ -1,11 +1,12 @@
 const vscode = require('vscode');
 const SC = require('./lang');
+const statusBar = require('./status-bar');
 
 async function activate(context) {
   const hyperScopesExt = vscode.extensions.getExtension('draivin.hscopes');
   const hyperScopes = await hyperScopesExt.activate();
   
-  SC.initStatusBar();
+  statusBar.initStatusBar();
 
   // This refreshes the token scope, but I don't think this is optimized.. but I haven't run into issues yet.
   vscode.window.onDidChangeActiveTextEditor(
