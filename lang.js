@@ -56,6 +56,7 @@ async function startSCLang() {
 
 async function stopSCLang() {
   try {
+    await lang.interpret('Server.killAll');
     await lang.quit();
     lang = null;
     statusBar.text = SCLANG_STATUS_BAR_OFF;
