@@ -1,7 +1,9 @@
 const vscode = require('vscode');
 const Lang = require('supercolliderjs').lang.default;
 const statusBar = require('./status-bar');
-const { flashHighlight, stringifyError, getDefaultSCLangExecutable } = require('./util');
+const { flashHighlight } = require('./util/flashHighlight');
+const { getDefaultSCLangExecutable } = require('./util/getDefaultSCLangExecutable');
+const { stringifyError } = require('./util/stringifyError');
 
 let lang = null;
 let polling = null;
