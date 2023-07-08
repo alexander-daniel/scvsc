@@ -34,7 +34,7 @@ async function startSCLang() {
     await lang.boot();
 
     postWindow.appendLine('SCVSC: sclang is ready');
-    statusBar.sclangStatus.text = statusBar.SCLANG_STATUS_BAR_LANG_ON;
+    statusBar.sclangStatus.text = statusBar.SCLANG_STATUS_BAR_ON;
     statusBar.sclangStatus.show();
   } catch (err) {
     postWindow.appendLine(err);
@@ -46,7 +46,7 @@ async function killSCSynth() {
   try {
     await lang.interpret('Server.killAll');
     clearInterval(polling);
-    statusBar.scsynthStatus.text = statusBar.SCLANG_STATUS_BAR_SERVER_OFF;
+    statusBar.scsynthStatus.text = statusBar.SCSYNTH_STATUS_BAR_OFF;
   } catch (err) {
     console.error(err);
   }
@@ -57,7 +57,7 @@ async function stopSCLang() {
     await killSCSynth();
     await lang.quit();
     lang = null;
-    statusBar.sclangStatus.text = statusBar.SCLANG_STATUS_BAR_LANG_OFF;
+    statusBar.sclangStatus.text = statusBar.SCLANG_STATUS_BAR_OFF;
     statusBar.sclangStatus.show();
   } catch (err) {
     postWindow.appendLine(err);
