@@ -42,16 +42,6 @@ async function startSCLang() {
   }
 }
 
-async function killSCSynth() {
-  try {
-    await lang.interpret('Server.killAll');
-    clearInterval(polling);
-    statusBar.scsynthStatus.text = statusBar.SCSYNTH_STATUS_BAR_OFF;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
 async function stopSCLang() {
   try {
     await killSCSynth();
@@ -95,6 +85,16 @@ async function bootSCSynth() {
     postWindow.appendLine(result);
   } catch (err) {
     postWindow.appendLine(err);
+    console.error(err);
+  }
+}
+
+async function killSCSynth() {
+  try {
+    await lang.interpret('Server.killAll');
+    clearInterval(polling);
+    statusBar.scsynthStatus.text = statusBar.SCSYNTH_STATUS_BAR_OFF;
+  } catch (err) {
     console.error(err);
   }
 }
