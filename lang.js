@@ -1,9 +1,10 @@
 const vscode = require('vscode');
+const Lang = require('supercolliderjs').lang.default;
 const statusBar = require('./status-bar');
 const { flashHighlight, stringifyError, getDefaultSCLangExecutable } = require('./util');
 
-const Lang = require('supercolliderjs').lang.default;
 let lang = null;
+let polling = null;
 
 const postWindow = vscode.window.createOutputChannel('scvsc postWindow');
 
@@ -33,24 +34,34 @@ async function startSCLang() {
     await lang.boot();
 
     postWindow.appendLine('SCVSC: sclang is ready');
-    statusBar.setText(statusBar.SCLANG_STATUS_BAR_ON);
-    statusBar.show();
+    statusBar.sclangStatus.text = statusBar.SCLANG_STATUS_BAR_LANG_ON;
+    statusBar.sclangStatus.show();
   } catch (err) {
     postWindow.appendLine(err);
-    console.log(err);
+    console.error(err);
+  }
+}
+
+async function killSCSynth() {
+  try {
+    await lang.interpret('Server.killAll');
+    clearInterval(polling);
+    statusBar.scsynthStatus.text = statusBar.SCLANG_STATUS_BAR_SERVER_OFF;
+  } catch (err) {
+    console.error(err);
   }
 }
 
 async function stopSCLang() {
   try {
-    await lang.interpret('Server.killAll');
+    await killSCSynth();
     await lang.quit();
     lang = null;
-    statusBar.setText(statusBar.SCLANG_STATUS_BAR_OFF);
-    statusBar.show();
+    statusBar.sclangStatus.text = statusBar.SCLANG_STATUS_BAR_LANG_OFF;
+    statusBar.sclangStatus.show();
   } catch (err) {
     postWindow.appendLine(err);
-    console.log(err);
+    console.error(err);
   }
 }
 
@@ -60,15 +71,15 @@ async function rebootSCLang() {
     await lang.boot();
   } catch (err) {
     postWindow.appendLine(err);
-    console.log(err);
+    console.error(err);
   }
 }
 
 async function toggleSCLang() {
   if (lang === null) {
-    startSCLang();
+    await startSCLang();
   } else {
-    stopSCLang();
+    await stopSCLang();
   }
 }
 
@@ -80,6 +91,7 @@ async function bootSCSynth() {
   try {
     const result = await lang.interpret('s.boot', null, true, false);
     console.log(result);
+    polling = setInterval(pollServerStatus, 500);
     postWindow.appendLine(result);
   } catch (err) {
     postWindow.appendLine(err);
@@ -205,12 +217,38 @@ async function hush() {
   }
 }
 
+async function getServerStatus() {
+  try {
+    const peakCPU = (await lang.interpret('Server.local.peakCPU')).toFixed(2);
+    const averageCPU = (await lang.interpret('Server.local.avgCPU')).toFixed(2);
+    const uGens = await lang.interpret('Server.local.numUGens');
+    const synths = await lang.interpret('Server.local.numSynths');
+    const groups = await lang.interpret('Server.local.numGroups');
+    const synthDefs = await lang.interpret('Server.local.numSynthDefs');
+    return { peakCPU, averageCPU, uGens, synths, groups, synthDefs };
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function pollServerStatus() {
+  try {
+    const serverStatus = await getServerStatus();
+    if (serverStatus) {
+      statusBar.updateSCSynthStatus(serverStatus);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 module.exports = {
   startSCLang,
   stopSCLang,
   rebootSCLang,
   toggleSCLang,
   bootSCSynth,
+  killSCSynth,
   evaluate,
   hush,
 };

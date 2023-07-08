@@ -1,32 +1,29 @@
 const vscode = require('vscode');
 
-const statusBar = vscode.window.createStatusBarItem('scstatus', 2);
+const sclangStatus = vscode.window.createStatusBarItem('sclangStatus', 2);
+const scsynthStatus = vscode.window.createStatusBarItem('scsynthStatus', 2);
 
 const SCLANG_STATUS_BAR = 'sclang';
-const SCLANG_STATUS_BAR_OFF = `${SCLANG_STATUS_BAR} ⭕`;
-const SCLANG_STATUS_BAR_ON = `${SCLANG_STATUS_BAR} 🟢`;
+const SCLANG_STATUS_BAR_LANG_OFF = `${SCLANG_STATUS_BAR} ⭕`;
+const SCLANG_STATUS_BAR_LANG_ON = `${SCLANG_STATUS_BAR} 🟢`;
+const SCLANG_STATUS_BAR_SERVER_OFF = `0.00%  0.00%  0u  0s  0g  0d`;
 
-statusBar.text = SCLANG_STATUS_BAR_OFF;
-statusBar.command = 'supercollider.toggleSCLang';
-statusBar.tooltip = 'Click to boot or quit the SuperCollider interpreter.';
+sclangStatus.text = SCLANG_STATUS_BAR_LANG_OFF;
+sclangStatus.command = 'supercollider.toggleSCLang';
+sclangStatus.tooltip = 'Click to boot or quit the SuperCollider interpreter.';
 
-async function initStatusBar() {
-  statusBar.show();
-  return;
-}
+scsynthStatus.text = SCLANG_STATUS_BAR_SERVER_OFF;
 
-function show() {
-  statusBar.show();
-}
-
-function setText(statusBarText) {
-  return statusBar.text = statusBarText;
+async function updateSCSynthStatus(serverStatus) {
+  const { peakCPU, averageCPU, uGens, synths, groups, synthDefs } = serverStatus;
+  scsynthStatus.text = `${peakCPU}%  ${averageCPU}%  ${uGens}u  ${synths}s  ${groups}g  ${synthDefs}d`;
 }
 
 module.exports = {
-  initStatusBar,
-  show,
-  setText,
-  SCLANG_STATUS_BAR_ON,
-  SCLANG_STATUS_BAR_OFF,
+  sclangStatus,
+  scsynthStatus,
+  updateSCSynthStatus,
+  SCLANG_STATUS_BAR_LANG_ON,
+  SCLANG_STATUS_BAR_LANG_OFF,
+  SCLANG_STATUS_BAR_SERVER_OFF,
 };

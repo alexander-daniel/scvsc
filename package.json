@@ -96,6 +96,11 @@
         "category": "SuperCollider"
       },
       {
+        "command": "supercollider.killSCSynth",
+        "title": "Kill SCSynth",
+        "category": "SuperCollider"
+      },
+      {
         "command": "supercollider.evaluate",
         "title": "Evaluate",
         "category": "SuperCollider"
