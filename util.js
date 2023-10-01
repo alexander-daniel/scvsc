@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const vscode = require('vscode');
 
-function getDefaultSclangExecutable() {
+function getDefaultSCLangExecutable() {
   switch (process.platform) {
     case 'darwin':
       return '/Applications/SuperCollider.app/Contents/MacOS/sclang';
@@ -54,5 +54,5 @@ function flashHighlight(editor, range, duration = 250) {
 module.exports = {
   flashHighlight,
   stringifyError,
-  getDefaultSclangExecutable,
+  getDefaultSCLangExecutable,
 };

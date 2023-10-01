@@ -57,13 +57,13 @@
         "comment": "Safety-critical command to override extremely loud sounds, so the context is more generic than other commands."
       },
       {
-        "command": "supercollider.bootServer",
+        "command": "supercollider.bootSCSynth",
         "key": "ctrl+b",
         "mac": "cmd+b",
         "when": "editorTextFocus && config.scvsc.useScideKeybindings"
       },
       {
-        "command": "supercollider.evalRegion",
+        "command": "supercollider.evaluate",
         "key": "ctrl+enter",
         "mac": "cmd+enter",
         "when": "editorTextFocus && config.scvsc.useScideKeybindings"
@@ -72,37 +72,37 @@
     "commands": [
       {
         "command": "supercollider.startSCLang",
-        "title": "Start sclang",
+        "title": "Start SCLang",
         "category": "SuperCollider"
       },
       {
         "command": "supercollider.stopSCLang",
-        "title": "Stop sclang",
+        "title": "Stop SCLang",
+        "category": "SuperCollider"
+      },
+      {
+        "command": "supercollider.rebootSCLang",
+        "title": "Reboot SCLang",
         "category": "SuperCollider"
       },
       {
         "command": "supercollider.toggleSCLang",
-        "title": "Start/stop sclang",
+        "title": "Start/Stop SCLang",
         "category": "SuperCollider"
       },
       {
-        "command": "supercollider.bootServer",
-        "title": "Boot a SuperCollider Server (scsynth)",
+        "command": "supercollider.bootSCSynth",
+        "title": "Boot SCSynth",
+        "category": "SuperCollider"
+      },
+      {
+        "command": "supercollider.evaluate",
+        "title": "Evaluate",
         "category": "SuperCollider"
       },
       {
         "command": "supercollider.hush",
         "title": "Hush",
-        "category": "SuperCollider"
-      },
-      {
-        "command": "supercollider.evaluateHighlighted",
-        "title": "Evaluate Highlighted",
-        "category": "SuperCollider"
-      },
-      {
-        "command": "supercollider.evalRegion",
-        "title": "Evaluate Region",
         "category": "SuperCollider"
       }
     ],
